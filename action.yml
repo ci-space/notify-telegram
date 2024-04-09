@@ -27,5 +27,5 @@ runs:
     - name: Send message
       run: |
         curl -s -X POST 'https://${{ inputs.host }}/bot${{ inputs.token }}/sendMessage' \
-        -d "chat_id=${{ input.chat_id }}&text=${{ input.message }}&message_thread_id=${{ input.chat_thread_id }}"
+        -d "chat_id=${{ inputs.chat_id }}&text=${{ inputs.message }}&message_thread_id=${{ inputs.chat_thread_id }}"
       shell: bash
