@@ -1,5 +1,5 @@
-name: telegram-action
-description: Send message to telegram
+name: Send message to Telegram
+description: Send message to Telegram
 inputs:
   token:
     description: telegram token
