@@ -1,0 +1,32 @@
+name: telegram-action
+description: Send message to telegram
+inputs:
+  token:
+    description: telegram token
+    required: true
+    default: "api.telegram.org"
+  chat_id:
+    description: telegram chat id
+    required: true
+  chat_thread_id:
+    description: telegram chat thread id
+    required: true
+  message:
+    description: message
+    required: true
+  host:
+    description: telegram host
+    required: false
+    default: "api.telegram.host"
+
+branding:
+  icon: 'message-square'
+  color: 'blue'
+runs:
+  using: composite
+  steps:
+    - name: Send message
+      run: |
+        curl -s -X POST 'https://${{ inputs.host }}/bot${{ inputs.token }}/sendMessage' \
+        -d "chat_id=${{ input.chat_id }}&text=${{ input.message }}&message_thread_id=${{ input.chat_thread_id }}"
+      shell: bash
