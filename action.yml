@@ -4,7 +4,6 @@ inputs:
   token:
     description: telegram token
     required: true
-    default: "api.telegram.org"
   chat_id:
     description: telegram chat id
     required: true
@@ -17,7 +16,7 @@ inputs:
   host:
     description: telegram host
     required: false
-    default: "api.telegram.host"
+    default: "api.telegram.org"
 
 branding:
   icon: 'message-square'
