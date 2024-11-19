@@ -15,15 +15,6 @@ func NewMarkdownRenderer() *MarkdownRenderer {
 	return &MarkdownRenderer{inner: html.NewRenderer(html.RendererOptions{})}
 }
 
-func (r *MarkdownRenderer) renderListItem(w io.Writer, node ast.Node, entering bool) ast.WalkStatus {
-	switch node.(type) {
-	case *ast.Paragraph:
-	default:
-		return r.RenderNode(w, node, entering)
-	}
-	return ast.GoToNext
-}
-
 func (r *MarkdownRenderer) RenderNode(w io.Writer, node ast.Node, entering bool) ast.WalkStatus {
 	switch n := node.(type) {
 	case *ast.Paragraph:
@@ -55,6 +46,6 @@ func (r *MarkdownRenderer) RenderNode(w io.Writer, node ast.Node, entering bool)
 	return ast.GoToNext
 }
 
-func (r *MarkdownRenderer) RenderHeader(w io.Writer, ast ast.Node) {}
+func (r *MarkdownRenderer) RenderHeader(_ io.Writer, _ ast.Node) {}
 
-func (r *MarkdownRenderer) RenderFooter(w io.Writer, ast ast.Node) {}
+func (r *MarkdownRenderer) RenderFooter(_ io.Writer, _ ast.Node) {}

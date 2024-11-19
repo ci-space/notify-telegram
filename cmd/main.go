@@ -29,6 +29,8 @@ func main() {
 	app.RunWithGlobalArgs(context.Background())
 }
 
+const colorGreen = 2
+
 func run(ctx *cli.Context) error {
 	cfg, err := env.ParseAs[config]()
 	if err != nil {
@@ -47,7 +49,7 @@ func run(ctx *cli.Context) error {
 		return fmt.Errorf("failed to send message: %w", err)
 	}
 
-	ctx.Output.PrintColoredBlock(2, fmt.Sprintf("Message was sent. ID: %d", res.MessageID))
+	ctx.Output.PrintColoredBlock(colorGreen, fmt.Sprintf("Message was sent. ID: %d", res.MessageID))
 
 	return nil
 }
