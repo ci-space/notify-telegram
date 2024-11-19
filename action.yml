@@ -17,15 +17,17 @@ inputs:
     description: telegram host
     required: false
     default: "api.telegram.org"
+  convert_markdown:
+    description: convert github markdown to telegram markdown
+    required: false
+    default: false
+  issue_tracker_url:
+    description: "URL to issue tracker. Example: https://my-project.atlassian.net/browse"
+    required: false
 
 branding:
   icon: 'message-square'
   color: 'blue'
 runs:
-  using: composite
-  steps:
-    - name: Send message
-      run: |
-        curl -s -X POST 'https://${{ inputs.host }}/bot${{ inputs.token }}/sendMessage' \
-        -d "chat_id=${{ inputs.chat_id }}&text=${{ inputs.message }}&message_thread_id=${{ inputs.chat_thread_id }}"
-      shell: bash
+  using: docker
+  image: 'Dockerfile'
