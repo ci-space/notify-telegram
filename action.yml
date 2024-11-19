@@ -29,10 +29,5 @@ branding:
   icon: 'message-square'
   color: 'blue'
 runs:
-  using: composite
-  steps:
-    - name: Send message
-      run: |
-        curl -s -X POST 'https://${{ inputs.host }}/bot${{ inputs.token }}/sendMessage' \
-        -d "chat_id=${{ inputs.chat_id }}&text=${{ inputs.message }}&message_thread_id=${{ inputs.chat_thread_id }}"
-      shell: bash
+  using: docker
+  image: 'Dockerfile'
