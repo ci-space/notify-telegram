@@ -1,9 +1,10 @@
 package internal
 
 import (
+	"io"
+
 	"github.com/gomarkdown/markdown/ast"
 	"github.com/gomarkdown/markdown/html"
-	"io"
 )
 
 type MarkdownRenderer struct {
@@ -14,6 +15,15 @@ func NewMarkdownRenderer() *MarkdownRenderer {
 	return &MarkdownRenderer{inner: html.NewRenderer(html.RendererOptions{})}
 }
 
+func (r *MarkdownRenderer) renderListItem(w io.Writer, node ast.Node, entering bool) ast.WalkStatus {
+	switch node.(type) {
+	case *ast.Paragraph:
+	default:
+		return r.RenderNode(w, node, entering)
+	}
+	return ast.GoToNext
+}
+
 func (r *MarkdownRenderer) RenderNode(w io.Writer, node ast.Node, entering bool) ast.WalkStatus {
 	switch n := node.(type) {
 	case *ast.Paragraph:
@@ -21,9 +31,7 @@ func (r *MarkdownRenderer) RenderNode(w io.Writer, node ast.Node, entering bool)
 			return ast.GoToNext
 		}
 
-		if entering {
-			r.inner.Outs(w, "\n")
-		}
+		r.inner.Outs(w, "\n")
 	case *ast.Strong:
 		r.inner.OutOneOf(w, entering, "<b>", "</b>")
 	case *ast.Emph:
@@ -36,7 +44,7 @@ func (r *MarkdownRenderer) RenderNode(w io.Writer, node ast.Node, entering bool)
 		}
 	case *ast.ListItem:
 		if entering {
-			r.inner.Outs(w, "-")
+			r.inner.Outs(w, "- ")
 		} else {
 			r.inner.Outs(w, "\n")
 		}
@@ -47,10 +55,6 @@ func (r *MarkdownRenderer) RenderNode(w io.Writer, node ast.Node, entering bool)
 	return ast.GoToNext
 }
 
-func (r *MarkdownRenderer) RenderHeader(w io.Writer, ast ast.Node) {
+func (r *MarkdownRenderer) RenderHeader(w io.Writer, ast ast.Node) {}
 
-}
-
-func (r *MarkdownRenderer) RenderFooter(w io.Writer, ast ast.Node) {
-
-}
+func (r *MarkdownRenderer) RenderFooter(w io.Writer, ast ast.Node) {}

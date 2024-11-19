@@ -78,7 +78,6 @@ func (m *Messenger) createTgMessage(msg Message) *tgSendMessage {
 	tgMsg.Markup = "HTML"
 
 	tgMsg.Text = m.markdownConverter.Convert(msg.Body)
-	panic(tgMsg.Text)
 
 	return tgMsg
 }
