@@ -15,6 +15,7 @@ type config struct {
 	Message         string `env:"INPUT_MESSAGE,required"`
 	Host            string `env:"INPUT_HOST,required"`
 	ConvertMarkdown bool   `env:"INPUT_CONVERT_MARKDOWN"`
+	IssueTrackerURL string `env:"INPUT_ISSUE_TRACKER_URL"`
 }
 
 func main() {
@@ -37,14 +38,21 @@ func run(ctx *cli.Context) error {
 		return fmt.Errorf("failed to parse config: %w", err)
 	}
 
-	messenger := internal.NewMessenger(cfg.Token, cfg.Host, internal.NewMarkdownToHTMLConverter())
-
-	res, err := messenger.Send(ctx.Context, internal.Message{
+	msg := internal.Message{
 		Body:            cfg.Message,
 		ChatID:          cfg.ChatID,
 		ChatThreadID:    cfg.ChatThreadID,
 		ConvertMarkdown: cfg.ConvertMarkdown,
-	})
+	}
+
+	if cfg.IssueTrackerURL != "" {
+		tracker := internal.NewIssueTracker(cfg.IssueTrackerURL)
+		msg.Body = tracker.InjectLinks(msg.Body)
+	}
+
+	messenger := internal.NewMessenger(cfg.Token, cfg.Host, internal.NewMarkdownToHTMLConverter())
+
+	res, err := messenger.Send(ctx.Context, msg)
 	if err != nil {
 		return fmt.Errorf("failed to send message: %w", err)
 	}

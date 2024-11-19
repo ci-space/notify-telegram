@@ -17,6 +17,9 @@ inputs:
     description: telegram host
     required: false
     default: "api.telegram.org"
+  issue_tracker_url:
+    description: "URL to issue tracker. Example: https://my-project.atlassian.net/browse"
+    required: false
 
 branding:
   icon: 'message-square'
