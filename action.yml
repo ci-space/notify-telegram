@@ -17,6 +17,10 @@ inputs:
     description: telegram host
     required: false
     default: "api.telegram.org"
+  convert_markdown:
+    description: convert github markdown to telegram markdown
+    required: false
+    default: false
   issue_tracker_url:
     description: "URL to issue tracker. Example: https://my-project.atlassian.net/browse"
     required: false
