@@ -22,22 +22,45 @@ func (r *MarkdownRenderer) RenderNode(w io.Writer, node ast.Node, entering bool)
 			return ast.GoToNext
 		}
 
-		r.inner.Outs(w, "\n")
+		if entering {
+			prev := ast.GetPrevNode(n)
+			if prev != nil {
+				switch prev.(type) {
+				case *ast.HTMLBlock, *ast.List, *ast.Paragraph, *ast.Heading, *ast.CaptionFigure,
+					*ast.CodeBlock, *ast.BlockQuote, *ast.Aside, *ast.HorizontalRule:
+					r.inner.CR(w)
+				}
+			}
+
+			if prev == nil {
+				_, isParentBlockQuote := n.Parent.(*ast.BlockQuote)
+				if isParentBlockQuote {
+					r.inner.CR(w)
+				}
+				_, isParentAside := n.Parent.(*ast.Aside)
+				if isParentAside {
+					r.inner.CR(w)
+				}
+			}
+		} else if ast.GetNextNode(n) != nil {
+			r.inner.CR(w)
+		}
 	case *ast.Strong:
 		r.inner.OutOneOf(w, entering, "<b>", "</b>")
 	case *ast.Emph:
 		r.inner.OutOneOf(w, entering, "<i>", "</i>")
 	case *ast.Heading:
+		if entering {
+			r.inner.CR(w)
+		}
 		r.inner.OutOneOf(w, entering, "<b>", "</b>")
 	case *ast.List:
-		if entering {
-			r.inner.Outs(w, "\n")
-		}
 	case *ast.ListItem:
 		if entering {
+			r.inner.CR(w)
 			r.inner.Outs(w, "- ")
-		} else {
-			r.inner.Outs(w, "\n")
+		} else if n.ListFlags&ast.ListItemEndOfList != 0 {
+			r.inner.CR(w)
 		}
 	default:
 		return r.inner.RenderNode(w, node, entering)

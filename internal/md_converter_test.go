@@ -16,23 +16,84 @@ func TestMarkdownToHTMLConverter(t *testing.T) {
 			Title: "heading with list",
 			BodyMD: `## Heading 1
 - item 1
-- item 2
-`,
+- item 2`,
 			ExpectedHTML: `<b>Heading 1</b>
 - item 1
-- item 2
-`,
+- item 2`,
 		},
 		{
 			Title: "link in list",
 			BodyMD: `## Heading 1
 - [link](http://12.34)
-- [link](http://12.34)
-`,
+- [link](http://12.34)`,
 			ExpectedHTML: `<b>Heading 1</b>
 - <a href="http://12.34">link</a>
-- <a href="http://12.34">link</a>
-`,
+- <a href="http://12.34">link</a>`,
+		},
+		{
+			Title: "Two headings",
+			BodyMD: `## Heading 1
+- item 1
+- item 2
+
+## Heading 2
+- item 1
+- item 2`,
+			ExpectedHTML: `<b>Heading 1</b>
+- item 1
+- item 2
+
+<b>Heading 2</b>
+- item 1
+- item 2`,
+		},
+		{
+			Title: "Two headings with under text",
+			BodyMD: `## Heading 1
+- item 1
+- item 2
+
+## Heading 2
+- item 1
+- item 2
+
+some text`,
+			ExpectedHTML: `<b>Heading 1</b>
+- item 1
+- item 2
+
+<b>Heading 2</b>
+- item 1
+- item 2
+
+some text`,
+		},
+		{
+			Title: "Two headings with under texts",
+			BodyMD: `## Heading 1
+- item 1
+- item 2
+
+## Heading 2
+- item 1
+- item 2
+
+some text1
+some text2
+
+some text3`,
+			ExpectedHTML: `<b>Heading 1</b>
+- item 1
+- item 2
+
+<b>Heading 2</b>
+- item 1
+- item 2
+
+some text1
+some text2
+
+some text3`,
 		},
 	}
 
