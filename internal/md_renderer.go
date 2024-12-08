@@ -43,7 +43,7 @@ func (r *MarkdownRenderer) RenderNode(w io.Writer, node ast.Node, entering bool)
 				}
 			}
 		} else if ast.GetNextNode(n) != nil {
-			r.inner.CR(w)
+			r.inner.Outs(w, "\n")
 		}
 	case *ast.Strong:
 		r.inner.OutOneOf(w, entering, "<b>", "</b>")

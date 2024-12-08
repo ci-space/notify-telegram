@@ -95,6 +95,28 @@ some text2
 
 some text3`,
 		},
+		{
+			Title: "text and heading with list",
+			BodyMD: `text
+
+## Heading 1
+- item 1
+- item 2
+
+## Heading 2
+- item 1
+- item 2`,
+
+			ExpectedHTML: `text
+
+<b>Heading 1</b>
+- item 1
+- item 2
+
+<b>Heading 2</b>
+- item 1
+- item 2`,
+		},
 	}
 
 	converter := NewMarkdownToHTMLConverter()
