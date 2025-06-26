@@ -56,17 +56,15 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-        with:
-          sparse-checkout: 'pkg/md2html'
-          sparse-checkout-cone-mode: false
 
       - name: Set up Go
         uses: actions/setup-go@v4 # action page: <https://github.com/actions/setup-go>
         with:
           go-version: stable
+          cache-dependency-path: 'pkg/md2html'
 
       - name: Install Go dependencies
-        run: go mod download
+        run: cd pkg/md2html && go mod download
 
       - name: Run tests
-        run: go test ./...
+        run: cd pkg/md2html && go test ./...
