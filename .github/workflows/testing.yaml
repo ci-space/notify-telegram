@@ -51,13 +51,13 @@ jobs:
         run: go test ./...
 
   md2html-unit-test:
-    name: unit-test
+    name: md2html-unit-test
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          path: ./pkg/md2html
+          path: pkg/md2html
 
       - name: Set up Go
         uses: actions/setup-go@v4 # action page: <https://github.com/actions/setup-go>
