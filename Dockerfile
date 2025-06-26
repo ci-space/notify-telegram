@@ -13,7 +13,7 @@ RUN go mod download
 
 COPY . .
 
-RUN GOOS=linux go build -ldflags="-s -w -X 'main.Version=${APP_VERSION}' -X 'main.BuildDate=${BUILD_TIME}'" -o /go/bin/notify-telegram /go/src/github.com/artarts36/notify-telegram/cmd/main.go
+RUN GOOS=linux go build -ldflags="-s -w -X 'main.Version=${APP_VERSION}' -X 'main.BuildDate=${BUILD_TIME}'" -o /go/bin/notify-telegram /go/src/github.com/ci-space/notify-telegram/cmd/main.go
 
 ######################################################
 
@@ -28,7 +28,7 @@ LABEL org.opencontainers.image.title="notify-telegram"
 LABEL org.opencontainers.image.description="send telegram message"
 LABEL org.opencontainers.image.url="https://github.com/ci-space/notify-telegram"
 LABEL org.opencontainers.image.source="https://github.com/ci-space/notify-telegram"
-LABEL org.opencontainers.image.vendor="ArtARTs36"
+LABEL org.opencontainers.image.vendor="ci-space"
 LABEL org.opencontainers.image.version="$APP_VERSION"
 LABEL org.opencontainers.image.created="$BUILD_TIME"
 LABEL org.opencontainers.image.licenses="MIT"
