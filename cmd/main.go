@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	cli "github.com/artarts36/singlecli"
-	"github.com/artarts36/telegram-action/internal"
 	"github.com/caarlos0/env/v11"
+	"github.com/ci-space/notify-telegram/internal"
 )
 
 type config struct {

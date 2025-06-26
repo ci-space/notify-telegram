@@ -11,13 +11,13 @@ isCommand() {
 
 # check if the first argument passed in looks like a flag
 if [ "${1#-}" != "$1" ]; then
-  set -- tini -- /go/bin/telegram-action "$@"
-# check if the first argument passed in is telegram-action
-elif [ "$1" = 'telegram-action' ]; then
+  set -- tini -- /go/bin/notify-telegram "$@"
+# check if the first argument passed in is notify-telegram
+elif [ "$1" = 'notify-telegram' ]; then
   set -- tini -- "$@"
 # check if the first argument passed in matches a known command
 elif isCommand "$1"; then
-  set -- tini -- /go/bin/telegram-action "$@"
+  set -- tini -- /go/bin/notify-telegram "$@"
 fi
 
 exec "$@"
