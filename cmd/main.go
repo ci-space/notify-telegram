@@ -50,7 +50,7 @@ func run(ctx *cli.Context) error {
 		msg.Body = tracker.InjectLinks(msg.Body)
 	}
 
-	messenger := internal.NewMessenger(cfg.Token, cfg.Host, internal.NewMarkdownToHTMLConverter())
+	messenger := internal.NewMessenger(cfg.Token, cfg.Host)
 
 	res, err := messenger.Send(ctx.Context, msg)
 	if err != nil {

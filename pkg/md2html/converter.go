@@ -1,4 +1,4 @@
-package internal
+package md2html
 
 import (
 	"github.com/gomarkdown/markdown"
@@ -6,15 +6,7 @@ import (
 	"strings"
 )
 
-type MarkdownToHTMLConverter struct {
-	renderer *MarkdownRenderer
-}
-
-func NewMarkdownToHTMLConverter() *MarkdownToHTMLConverter {
-	return &MarkdownToHTMLConverter{renderer: NewMarkdownRenderer()}
-}
-
-func (c *MarkdownToHTMLConverter) Convert(text string) string {
+func Convert(text string) string {
 	text = strings.ReplaceAll(text, "\\n", "\n")
 
 	extensions := parser.CommonExtensions | parser.BackslashLineBreak

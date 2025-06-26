@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/ci-space/notify-telegram/pkg/md2html"
 )
 
 type Message struct {
@@ -77,7 +79,7 @@ func (m *Messenger) createTgMessage(msg Message) *tgSendMessage {
 	tgMsg.Type = "text"
 	tgMsg.Markup = "HTML"
 
-	tgMsg.Text = m.markdownConverter.Convert(msg.Body)
+	tgMsg.Text = md2html.Convert(msg.Body)
 
 	return tgMsg
 }

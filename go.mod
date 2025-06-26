@@ -2,11 +2,14 @@ module github.com/artarts36/telegram-action
 
 go 1.23.3
 
+replace github.com/ci-space/notify-telegram/pkg/md2html => ./pkg/md2html
+
 require (
 	github.com/artarts36/singlecli v0.0.0-20241017172045-f9a31a534745
 	github.com/caarlos0/env/v11 v11.2.2
-	github.com/gomarkdown/markdown v0.0.0-20241105142532-d03b89096d81
-	github.com/stretchr/testify v1.9.0
+	github.com/ci-space/notify-telegram/pkg/md2html v0.0.0-00010101000000-000000000000
+	github.com/gomarkdown/markdown v0.0.0-20250311123330-531bef5e742b
+	github.com/stretchr/testify v1.10.0
 )
 
 require (

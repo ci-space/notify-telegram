@@ -10,16 +10,13 @@ import (
 type Messenger struct {
 	botToken string
 	host     string
-
-	markdownConverter *MarkdownToHTMLConverter
 }
 
 func NewMessenger(
 	botToken string,
 	host string,
-	markdownRenderer *MarkdownToHTMLConverter,
 ) *Messenger {
-	return &Messenger{botToken: botToken, host: host, markdownConverter: markdownRenderer}
+	return &Messenger{botToken: botToken, host: host}
 }
 
 func (m *Messenger) sendRequest(req *http.Request, out interface{}) error {

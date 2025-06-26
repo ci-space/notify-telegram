@@ -1,4 +1,4 @@
-package internal
+package md2html
 
 import (
 	"testing"
@@ -119,11 +119,9 @@ some text3`,
 		},
 	}
 
-	converter := NewMarkdownToHTMLConverter()
-
 	for _, c := range cases {
 		t.Run(c.Title, func(t *testing.T) {
-			assert.Equal(t, c.ExpectedHTML, converter.Convert(c.BodyMD))
+			assert.Equal(t, c.ExpectedHTML, Convert(c.BodyMD))
 		})
 	}
 }

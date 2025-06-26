@@ -1,4 +1,4 @@
-package internal
+package md2html
 
 import (
 	"io"
