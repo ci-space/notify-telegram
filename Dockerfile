@@ -8,6 +8,7 @@ ARG BUILD_TIME="undefined"
 WORKDIR /go/src/github.com/ci-space/notify-telegram
 
 COPY go.mod go.sum ./
+COPY ./pkg/md2html/go.mod ./pkg/md2html/go.sum ./pkg/md2html/
 RUN go mod download
 
 COPY . .
