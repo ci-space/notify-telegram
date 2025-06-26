@@ -1,0 +1,22 @@
+name: release
+
+permissions: write-all
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: version
+        required: true
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+
+jobs:
+  release:
+    uses: ci-space/workflows/.github/workflows/release-docker-github-action.yaml@master
+    secrets: inherit
+    with:
+      version: ${{ github.event.inputs.version }}

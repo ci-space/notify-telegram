@@ -1,5 +1,6 @@
 test: ## Run tests
 	go test ./...
+	cd ./pkg/md2html && go test ./...
 
 lint: ## Run lint
 	golangci-lint run --fix
