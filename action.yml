@@ -30,4 +30,4 @@ branding:
   color: 'blue'
 runs:
   using: docker
-  image: 'Dockerfile'
+  image: docker://ghcr.io/ci-space/notify-telegram:v0.2.1
