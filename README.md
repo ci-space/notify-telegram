@@ -21,8 +21,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    needs:
-      - build
 
     steps:
         name: Send notification
@@ -33,5 +31,5 @@ jobs:
           chat_thread_id: ${{ secrets.TELEGRAM_CHAT_THREAD }}
           convert_markdown: true
           message: |
-            ${{ github.repository }} deployed failed on tag ${{ github.event.release.tag_name }}
+            ${{ github.repository }} deployed on tag ${{ github.event.release.tag_name }}
 ```
