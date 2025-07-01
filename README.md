@@ -1,6 +1,6 @@
-# telegram-action
+# notify-telegram
 
-telegram-action - GitHub Action for sending messages to Telegram
+notify-telegram - GitHub Action for sending messages to Telegram
 
 Features:
 - Convert Markdown to Telegram HTML
