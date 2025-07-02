@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	cli "github.com/artarts36/singlecli"
@@ -51,21 +52,36 @@ func run(ctx *cli.Context) error {
 		return fmt.Errorf("failed to parse config: %w", err)
 	}
 
-	res, err := send(ctx, cfg)
+	if cfg.Mode == modeUnspecified {
+		cfg.Mode = modeCreate
+	} else if !cfg.Mode.Valid() {
+		return fmt.Errorf("mode %q unknown", cfg.Mode)
+	}
+
+	messageID, err := send(ctx, cfg)
 	if err != nil {
 		return err
 	}
 
-	ctx.Output.PrintColoredBlock(colorGreen, fmt.Sprintf("SendingMessage was sent. ID: %d", res.MessageID))
+	ctx.Output.PrintColoredBlock(colorGreen, fmt.Sprintf("Message was sent. ID: %d", messageID))
 
 	return githuboutput.WhenAvailable(func() error {
-		return githuboutput.Write("message_id", fmt.Sprintf("%d", res.MessageID))
+		return githuboutput.Write("message_id", fmt.Sprintf("%d", messageID))
 	})
 }
 
-func send(ctx *cli.Context, cfg config) (*tgapi.SentMessage, error) {
+func send(ctx *cli.Context, cfg config) (int64, error) {
 	client := tgapi.NewClient(cfg.Token, cfg.Host)
 
+	switch cfg.Mode {
+	case modeCreate:
+		return create(ctx, client, cfg)
+	default:
+		return 0, errors.New("unknown mode")
+	}
+}
+
+func create(ctx *cli.Context, client *tgapi.Client, cfg config) (int64, error) {
 	msg := tgapi.SendingMessage{
 		Body:            cfg.Message,
 		ChatID:          cfg.ChatID,
@@ -80,8 +96,19 @@ func send(ctx *cli.Context, cfg config) (*tgapi.SentMessage, error) {
 
 	res, err := client.SendMessage(ctx.Context, msg)
 	if err != nil {
-		return nil, fmt.Errorf("failed to send message: %w", err)
+		return 0, fmt.Errorf("failed to send message: %w", err)
 	}
 
-	return res, nil
+	return res.MessageID, nil
+}
+
+func (m mode) Valid() bool {
+	switch m {
+	case modeCreate:
+		return true
+	case modeUpdate:
+		return true
+	default:
+		return false
+	}
 }
