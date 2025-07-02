@@ -2,28 +2,32 @@ name: Send message to Telegram
 description: Send message to Telegram
 inputs:
   token:
-    description: telegram token
+    description: Token for Telegram Bot
     required: true
   chat_id:
-    description: telegram chat id
+    description: ID of Telegram Chat
     required: true
   chat_thread_id:
-    description: telegram chat thread id
+    description: ID of Telegram chat
     required: true
   message:
-    description: message
+    description: Text for message
     required: true
   host:
-    description: telegram host
+    description: Telegram host
     required: false
     default: "api.telegram.org"
   convert_markdown:
-    description: convert github markdown to telegram markdown
+    description: Convert github markdown to telegram markdown
     required: false
     default: false
   issue_tracker_url:
     description: "URL to issue tracker. Example: https://my-project.atlassian.net/browse"
     required: false
+
+outputs:
+  message_id:
+    description: "ID of sent message"
 
 branding:
   icon: 'message-square'
