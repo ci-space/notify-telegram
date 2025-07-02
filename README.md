@@ -49,7 +49,7 @@ jobs:
 
     steps:
       - name: Send notification
-        uses: ci-space/notify-telegram@v0.3.0
+        uses: ci-space/notify-telegram@v0.3.2
         with:
           token: ${{ secrets.TELEGRAM_TOKEN }}
           chat_id: ${{ secrets.TELEGRAM_CHAT }}
@@ -78,10 +78,49 @@ jobs:
     steps:
       - name: Send notification
         id: send
-        uses: ci-space/notify-telegram@v0.3.0
+        uses: ci-space/notify-telegram@v0.3.2
         with:
           # omit config
 
       - name: Print message id
         run: echo ${{ steps.send.outputs.message_id }}
 ```
+
+
+### Create and update message
+
+.github/workflows/release.yaml:
+
+```yaml
+name: Release
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  counter:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send count 1
+        id: first
+        uses: ci-space/notify-telegram@v0.3.2
+        with:
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          chat_id: ${{ secrets.TELEGRAM_CHAT }}
+          message: |
+            Count: 1
+            
+      - name: Send count 2
+        uses: ci-space/notify-telegram@v0.3.2
+        with:
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          chat_id: ${{ secrets.TELEGRAM_CHAT }}
+          message_id: ${{ steps.first.outputs.message_id }}
+          mode: update
+          message: |
+            Count: 2
+```
+
