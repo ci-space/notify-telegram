@@ -1,4 +1,4 @@
-package internal
+package tgapi
 
 import (
 	"bytes"
@@ -23,23 +23,7 @@ type SentMessage struct {
 	MessageID int64
 }
 
-type tgSendResponse struct {
-	Result struct {
-		MessageID int64 `json:"message_id"`
-	} `json:"result"`
-}
-
-type tgSendMessage struct {
-	Text string `json:"text"`
-
-	ChatID       string `json:"chat_id"`
-	ChatThreadID string `json:"message_thread_id,omitempty"`
-
-	Type   string `json:"type"`
-	Markup string `json:"parse_mode"`
-}
-
-func (m *Messenger) Send(ctx context.Context, msg Message) (*SentMessage, error) {
+func (m *Client) Send(ctx context.Context, msg Message) (*SentMessage, error) {
 	tgMsg := m.createTgMessage(msg)
 
 	body, err := json.Marshal(tgMsg)
@@ -54,7 +38,7 @@ func (m *Messenger) Send(ctx context.Context, msg Message) (*SentMessage, error)
 		return nil, fmt.Errorf("failed to make request: %w", err)
 	}
 
-	var res tgSendResponse
+	var res sendMessageResponse
 
 	err = m.sendRequest(req, &res)
 	if err != nil {
@@ -66,8 +50,8 @@ func (m *Messenger) Send(ctx context.Context, msg Message) (*SentMessage, error)
 	}, nil
 }
 
-func (m *Messenger) createTgMessage(msg Message) *tgSendMessage {
-	tgMsg := &tgSendMessage{
+func (m *Client) createTgMessage(msg Message) *sendMessageRequest {
+	tgMsg := &sendMessageRequest{
 		Text:         msg.Body,
 		ChatID:       msg.ChatID,
 		ChatThreadID: msg.ChatThreadID,
