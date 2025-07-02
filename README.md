@@ -2,11 +2,31 @@
 
 notify-telegram - GitHub Action for sending messages to Telegram
 
-Features:
+**Features**
 - Convert Markdown to Telegram HTML
 - Inject links to issue trackers
 
+**Inputs**
+
+| Parameter             | Description                                                                                             | Required | Default value      |
+|-----------------------|---------------------------------------------------------------------------------------------------------|----------|--------------------|
+| **token**             | Token for Telegram bot                                                                                  | ✔️       | -                  |
+| **chat_id**           | ID of Telegram chat                                                                                     | ✔️       | -                  |
+| **chat_thread_id**    | ID of Telegram chat thread                                                                              |          | -                  |
+| **message**           | Text for message                                                                                        | ✔️       | -                  |
+| **host**              | Telegram host                                                                                           |          | `api.telegram.org` |
+| **convert_markdown**  | Flag that indicates whether markdown should be converted from **message**. Possible values: true, false |          | `false`            |
+| **issue_tracker_url** | URL to issue tracker. Example: https://my-project.atlassian.net/browse                                  |          | -                  |
+
+**Outputs**
+
+| Parameter      | Description        |
+|----------------|--------------------|
+| **message_id** | ID of sent message |
+
 ## Usage
+
+### Send message on Release
 
 .github/workflows/release.yaml:
 
@@ -23,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-        name: Send notification
+      - name: Send notification
         uses: ci-space/notify-telegram@v0.3.0
         with:
           token: ${{ secrets.TELEGRAM_TOKEN }}
@@ -32,4 +52,31 @@ jobs:
           convert_markdown: true
           message: |
             ${{ github.repository }} deployed on tag ${{ github.event.release.tag_name }}
+```
+
+### Get ID of sent message
+
+.github/workflows/release.yaml:
+
+```yaml
+name: Release
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send notification
+        id: send
+        uses: ci-space/notify-telegram@v0.3.0
+        with:
+          # omit config
+
+      - name: Print message id
+        run: echo ${{ steps.send.outputs.message_id }}
 ```

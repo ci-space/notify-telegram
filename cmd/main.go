@@ -3,8 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+
 	cli "github.com/artarts36/singlecli"
 	"github.com/caarlos0/env/v11"
+	githuboutput "github.com/ci-space/github-output"
 	"github.com/ci-space/notify-telegram/internal"
 )
 
@@ -59,5 +61,7 @@ func run(ctx *cli.Context) error {
 
 	ctx.Output.PrintColoredBlock(colorGreen, fmt.Sprintf("Message was sent. ID: %d", res.MessageID))
 
-	return nil
+	return githuboutput.WhenAvailable(func() error {
+		return githuboutput.Write("message_id", fmt.Sprintf("%d", res.MessageID))
+	})
 }
