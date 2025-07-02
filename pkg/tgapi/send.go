@@ -10,7 +10,7 @@ import (
 	"github.com/ci-space/notify-telegram/pkg/md2html"
 )
 
-type Message struct {
+type SendingMessage struct {
 	Body string
 
 	ChatID       string
@@ -23,8 +23,8 @@ type SentMessage struct {
 	MessageID int64
 }
 
-func (m *Client) Send(ctx context.Context, msg Message) (*SentMessage, error) {
-	tgMsg := m.createTgMessage(msg)
+func (m *Client) SendMessage(ctx context.Context, msg SendingMessage) (*SentMessage, error) {
+	tgMsg := m.createSendMessageRequest(msg)
 
 	body, err := json.Marshal(tgMsg)
 	if err != nil {
@@ -50,7 +50,7 @@ func (m *Client) Send(ctx context.Context, msg Message) (*SentMessage, error) {
 	}, nil
 }
 
-func (m *Client) createTgMessage(msg Message) *sendMessageRequest {
+func (m *Client) createSendMessageRequest(msg SendingMessage) *sendMessageRequest {
 	tgMsg := &sendMessageRequest{
 		Text:         msg.Body,
 		ChatID:       msg.ChatID,

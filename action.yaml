@@ -24,6 +24,13 @@ inputs:
   issue_tracker_url:
     description: "URL to issue tracker. Example: https://my-project.atlassian.net/browse"
     required: false
+  mode:
+    description: "Mode of send. Possible values: [create, update]"
+    required: false
+    default: "create"
+  message_id:
+    description: "ID of updating message. Required if mode is update"
+    required: false
 
 outputs:
   message_id:

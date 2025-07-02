@@ -20,6 +20,8 @@ notify-telegram - GitHub Action for sending messages to Telegram
 | **host**              | Telegram host                                                                                           |          | `api.telegram.org` |
 | **convert_markdown**  | Flag that indicates whether markdown should be converted from **message**. Possible values: true, false |          | `false`            |
 | **issue_tracker_url** | URL to issue tracker. Example: https://my-project.atlassian.net/browse                                  |          | -                  |
+| **mode**              | Mode of send. Possible values: `create`, `update`                                                       |          | `create`           |
+| **message_id**        | ID of updating message. Required if mode is `update`                                                    |          | `update`           |
 
 **Outputs**
 
