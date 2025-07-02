@@ -6,8 +6,6 @@ github.com/buger/jsonparser v1.1.1 h1:2PnMjfWD7wBILjqQbt530v576A/cAbQvEW9gGIpYMU
 github.com/buger/jsonparser v1.1.1/go.mod h1:6RYKKt7H4d4+iWqouImQ9R2FZql3VbhNgx27UK13J/0=
 github.com/caarlos0/env/v11 v11.2.2 h1:95fApNrUyueipoZN/EhA8mMxiNxrBwDa+oAZrMWl3Kg=
 github.com/caarlos0/env/v11 v11.2.2/go.mod h1:JBfcdeQiBoI3Zh1QRAWfe+tpiNTmDtcCj/hHHHMx0vc=
-github.com/ci-space/github-output v0.1.0 h1:zYj2xNI6o3Tk3smH0LkvYcBDwOYLiV9A+UjW5LEVN9E=
-github.com/ci-space/github-output v0.1.0/go.mod h1:MxJAT5KnyEwvj4opWcIdKsArsLQInyd7E9A0M9+RjDo=
 github.com/ci-space/github-output v0.1.1 h1:NRjf+FqSQ8ljX6WoKWiafmv4rg0UxrlygLRq3pc8gyE=
 github.com/ci-space/github-output v0.1.1/go.mod h1:MxJAT5KnyEwvj4opWcIdKsArsLQInyd7E9A0M9+RjDo=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=

@@ -2,6 +2,9 @@
 
 notify-telegram - GitHub Action for sending messages to Telegram
 
+📦 [md2html](./pkg/md2html) 📦 [tgapi](./pkg/tgapi)
+
+
 **Features**
 - Convert Markdown to Telegram HTML
 - Inject links to issue trackers

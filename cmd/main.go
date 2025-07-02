@@ -6,8 +6,10 @@ import (
 
 	cli "github.com/artarts36/singlecli"
 	"github.com/caarlos0/env/v11"
+
 	githuboutput "github.com/ci-space/github-output"
 	"github.com/ci-space/notify-telegram/internal"
+	"github.com/ci-space/notify-telegram/pkg/tgapi"
 )
 
 type config struct {
@@ -40,7 +42,7 @@ func run(ctx *cli.Context) error {
 		return fmt.Errorf("failed to parse config: %w", err)
 	}
 
-	msg := internal.Message{
+	msg := tgapi.Message{
 		Body:            cfg.Message,
 		ChatID:          cfg.ChatID,
 		ChatThreadID:    cfg.ChatThreadID,
@@ -52,9 +54,9 @@ func run(ctx *cli.Context) error {
 		msg.Body = tracker.InjectLinks(msg.Body)
 	}
 
-	messenger := internal.NewMessenger(cfg.Token, cfg.Host)
+	client := tgapi.NewClient(cfg.Token, cfg.Host)
 
-	res, err := messenger.Send(ctx.Context, msg)
+	res, err := client.Send(ctx.Context, msg)
 	if err != nil {
 		return fmt.Errorf("failed to send message: %w", err)
 	}

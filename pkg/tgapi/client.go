@@ -1,4 +1,4 @@
-package internal
+package tgapi
 
 import (
 	"encoding/json"
@@ -7,19 +7,19 @@ import (
 	"net/http"
 )
 
-type Messenger struct {
+type Client struct {
 	botToken string
 	host     string
 }
 
-func NewMessenger(
+func NewClient(
 	botToken string,
 	host string,
-) *Messenger {
-	return &Messenger{botToken: botToken, host: host}
+) *Client {
+	return &Client{botToken: botToken, host: host}
 }
 
-func (m *Messenger) sendRequest(req *http.Request, out interface{}) error {
+func (m *Client) sendRequest(req *http.Request, out interface{}) error {
 	req.Header.Add("Content-Type", "application/json")
 
 	resp, err := http.DefaultClient.Do(req)
