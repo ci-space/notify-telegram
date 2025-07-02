@@ -20,7 +20,16 @@ type config struct {
 	Host            string `env:"INPUT_HOST,required"`
 	ConvertMarkdown bool   `env:"INPUT_CONVERT_MARKDOWN"`
 	IssueTrackerURL string `env:"INPUT_ISSUE_TRACKER_URL"`
+	Mode            mode   `env:"INPUT_MODE"`
 }
+
+type mode string
+
+const (
+	modeUnspecified = ""
+	modeCreate      = "create"
+	modeUpdate      = "update"
+)
 
 func main() {
 	app := &cli.App{
@@ -42,7 +51,22 @@ func run(ctx *cli.Context) error {
 		return fmt.Errorf("failed to parse config: %w", err)
 	}
 
-	msg := tgapi.Message{
+	res, err := send(ctx, cfg)
+	if err != nil {
+		return err
+	}
+
+	ctx.Output.PrintColoredBlock(colorGreen, fmt.Sprintf("SendingMessage was sent. ID: %d", res.MessageID))
+
+	return githuboutput.WhenAvailable(func() error {
+		return githuboutput.Write("message_id", fmt.Sprintf("%d", res.MessageID))
+	})
+}
+
+func send(ctx *cli.Context, cfg config) (*tgapi.SentMessage, error) {
+	client := tgapi.NewClient(cfg.Token, cfg.Host)
+
+	msg := tgapi.SendingMessage{
 		Body:            cfg.Message,
 		ChatID:          cfg.ChatID,
 		ChatThreadID:    cfg.ChatThreadID,
@@ -54,16 +78,10 @@ func run(ctx *cli.Context) error {
 		msg.Body = tracker.InjectLinks(msg.Body)
 	}
 
-	client := tgapi.NewClient(cfg.Token, cfg.Host)
-
-	res, err := client.Send(ctx.Context, msg)
+	res, err := client.SendMessage(ctx.Context, msg)
 	if err != nil {
-		return fmt.Errorf("failed to send message: %w", err)
+		return nil, fmt.Errorf("failed to send message: %w", err)
 	}
 
-	ctx.Output.PrintColoredBlock(colorGreen, fmt.Sprintf("Message was sent. ID: %d", res.MessageID))
-
-	return githuboutput.WhenAvailable(func() error {
-		return githuboutput.Write("message_id", fmt.Sprintf("%d", res.MessageID))
-	})
+	return res, nil
 }
