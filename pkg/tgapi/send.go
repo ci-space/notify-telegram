@@ -24,7 +24,7 @@ type SentMessage struct {
 }
 
 func (m *Client) SendMessage(ctx context.Context, msg SendingMessage) (*SentMessage, error) {
-	tgMsg := m.createTgMessage(msg)
+	tgMsg := m.createSendMessageRequest(msg)
 
 	body, err := json.Marshal(tgMsg)
 	if err != nil {
@@ -50,7 +50,7 @@ func (m *Client) SendMessage(ctx context.Context, msg SendingMessage) (*SentMess
 	}, nil
 }
 
-func (m *Client) createTgMessage(msg SendingMessage) *sendMessageRequest {
+func (m *Client) createSendMessageRequest(msg SendingMessage) *sendMessageRequest {
 	tgMsg := &sendMessageRequest{
 		Text:         msg.Body,
 		ChatID:       msg.ChatID,

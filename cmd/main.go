@@ -22,6 +22,7 @@ type config struct {
 	ConvertMarkdown bool   `env:"INPUT_CONVERT_MARKDOWN"`
 	IssueTrackerURL string `env:"INPUT_ISSUE_TRACKER_URL"`
 	Mode            mode   `env:"INPUT_MODE"`
+	MessageID       int64  `env:"INPUT_MESSAGE_ID"`
 }
 
 type mode string
@@ -54,6 +55,8 @@ func run(ctx *cli.Context) error {
 
 	if cfg.Mode == modeUnspecified {
 		cfg.Mode = modeCreate
+	} else if cfg.Mode == modeUpdate && cfg.MessageID == 0 {
+		return fmt.Errorf("message id must be filled, when mode = update")
 	} else if !cfg.Mode.Valid() {
 		return fmt.Errorf("mode %q unknown", cfg.Mode)
 	}
@@ -76,6 +79,8 @@ func send(ctx *cli.Context, cfg config) (int64, error) {
 	switch cfg.Mode {
 	case modeCreate:
 		return create(ctx, client, cfg)
+	case modeUpdate:
+		return update(ctx, client, cfg)
 	default:
 		return 0, errors.New("unknown mode")
 	}
@@ -96,7 +101,28 @@ func create(ctx *cli.Context, client *tgapi.Client, cfg config) (int64, error) {
 
 	res, err := client.SendMessage(ctx.Context, msg)
 	if err != nil {
-		return 0, fmt.Errorf("failed to send message: %w", err)
+		return 0, fmt.Errorf("send message: %w", err)
+	}
+
+	return res.MessageID, nil
+}
+
+func update(ctx *cli.Context, client *tgapi.Client, cfg config) (int64, error) {
+	msg := tgapi.EditingMessageText{
+		ID:              cfg.MessageID,
+		ChatID:          cfg.ChatID,
+		Body:            cfg.Message,
+		ConvertMarkdown: cfg.ConvertMarkdown,
+	}
+
+	if cfg.IssueTrackerURL != "" {
+		tracker := internal.NewIssueTracker(cfg.IssueTrackerURL)
+		msg.Body = tracker.InjectLinks(msg.Body)
+	}
+
+	res, err := client.EditMessageText(ctx.Context, msg)
+	if err != nil {
+		return 0, fmt.Errorf("edit message text: %w", err)
 	}
 
 	return res.MessageID, nil

@@ -15,3 +15,17 @@ type sendMessageResponse struct {
 		MessageID int64 `json:"message_id"`
 	} `json:"result"`
 }
+
+type editMessageTextRequest struct {
+	ID     int64  `json:"message_id"`
+	ChatID string `json:"chat_id"`
+	Text   string `json:"text"`
+	Type   string `json:"type"`
+	Markup string `json:"parse_mode"`
+}
+
+type editMessageTextResponse struct {
+	Result struct {
+		MessageID int64 `json:"message_id"`
+	} `json:"result"`
+}
