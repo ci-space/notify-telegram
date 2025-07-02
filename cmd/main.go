@@ -55,6 +55,10 @@ func run(ctx *cli.Context) error {
 
 	if cfg.Mode == modeUnspecified {
 		cfg.Mode = modeCreate
+	}
+
+	if cfg.Mode == modeCreate && cfg.MessageID > 0 { //nolint:gocritic // not need
+		return fmt.Errorf("message id must be empty, when mode = create")
 	} else if cfg.Mode == modeUpdate && cfg.MessageID == 0 {
 		return fmt.Errorf("message id must be filled, when mode = update")
 	} else if !cfg.Mode.Valid() {
