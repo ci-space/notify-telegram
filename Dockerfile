@@ -9,6 +9,7 @@ WORKDIR /go/src/github.com/ci-space/notify-telegram
 
 COPY go.mod go.sum ./
 COPY ./pkg/md2html/go.mod ./pkg/md2html/go.sum ./pkg/md2html/
+COPY ./pkg/tgapi/go.mod ./pkg/tgapi/go.sum ./pkg/tgapi/
 RUN go mod download
 
 COPY . .
