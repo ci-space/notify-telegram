@@ -18,6 +18,7 @@ notify-telegram - GitHub Action for sending messages to Telegram
 | **chat_thread_id**    | ID of Telegram chat thread                                                                              |          | -                  |
 | **message**           | Text for message                                                                                        | ✔️       | -                  |
 | **host**              | Telegram host                                                                                           |          | `api.telegram.org` |
+| **socks5_addr**       | SOCKS5 proxy address. Example: `127.0.0.1:1080`                                                         |          | -                  |
 | **convert_markdown**  | Flag that indicates whether markdown should be converted from **message**. Possible values: true, false |          | `false`            |
 | **issue_tracker_url** | URL to issue tracker. Example: https://my-project.atlassian.net/browse                                  |          | -                  |
 | **mode**              | Mode of send. Possible values: `create`, `update`                                                       |          | `create`           |
@@ -123,4 +124,3 @@ jobs:
           message: |
             Count: 2
 ```
-

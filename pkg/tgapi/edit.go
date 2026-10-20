@@ -28,14 +28,14 @@ func (m *Client) EditMessageText(ctx context.Context, msg EditingMessageText) (*
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, bytes.NewReader(body))
 	if err != nil {
-		return nil, fmt.Errorf("make request: %w", err)
+		return nil, redactBotToken(fmt.Errorf("make request: %w", err), m.botToken)
 	}
 
 	var res editMessageTextResponse
 
 	err = m.sendRequest(req, &res)
 	if err != nil {
-		return nil, err
+		return nil, redactBotToken(err, m.botToken)
 	}
 
 	return &SentMessage{

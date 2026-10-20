@@ -17,6 +17,9 @@ inputs:
     description: Telegram host
     required: false
     default: "api.telegram.org"
+  socks5_addr:
+    description: "SOCKS5 proxy address. Example: 127.0.0.1:1080"
+    required: false
   convert_markdown:
     description: Convert github markdown to telegram markdown
     required: false

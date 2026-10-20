@@ -19,6 +19,7 @@ type config struct {
 	ChatThreadID    string `env:"INPUT_CHAT_THREAD_ID"`
 	Message         string `env:"INPUT_MESSAGE,required"`
 	Host            string `env:"INPUT_HOST,required"`
+	Socks5Addr      string `env:"INPUT_SOCKS5_ADDR"`
 	ConvertMarkdown bool   `env:"INPUT_CONVERT_MARKDOWN"`
 	IssueTrackerURL string `env:"INPUT_ISSUE_TRACKER_URL"`
 	Mode            mode   `env:"INPUT_MODE"`
@@ -78,7 +79,14 @@ func run(ctx *cli.Context) error {
 }
 
 func send(ctx *cli.Context, cfg config) (int64, error) {
-	client := tgapi.NewClient(cfg.Token, cfg.Host)
+	client, err := tgapi.NewClient(tgapi.Config{
+		BotToken:   cfg.Token,
+		Host:       cfg.Host,
+		Socks5Addr: cfg.Socks5Addr,
+	})
+	if err != nil {
+		return 0, fmt.Errorf("create telegram client: %w", err)
+	}
 
 	switch cfg.Mode {
 	case modeCreate:

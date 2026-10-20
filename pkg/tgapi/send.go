@@ -35,14 +35,14 @@ func (m *Client) SendMessage(ctx context.Context, msg SendingMessage) (*SentMess
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, bytes.NewReader(body))
 	if err != nil {
-		return nil, fmt.Errorf("failed to make request: %w", err)
+		return nil, redactBotToken(fmt.Errorf("failed to make request: %w", err), m.botToken)
 	}
 
 	var res sendMessageResponse
 
 	err = m.sendRequest(req, &res)
 	if err != nil {
-		return nil, err
+		return nil, redactBotToken(err, m.botToken)
 	}
 
 	return &SentMessage{
