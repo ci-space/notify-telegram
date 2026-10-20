@@ -5,3 +5,6 @@ test: ## Run tests
 
 lint: ## Run lint
 	golangci-lint run --fix
+
+build/docker:
+	docker build -t ci-space/notify-telegram:local .
