@@ -2,6 +2,7 @@ package tgapi
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -76,6 +77,71 @@ func TestNewClientWithInvalidSocks5Proxy(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "invalid SOCKS5 proxy scheme") {
 		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func TestMessageRequestsWithInlineKeyboard(t *testing.T) {
+	keyboard := &InlineKeyboardMarkup{
+		InlineKeyboard: [][]InlineKeyboardButton{
+			{{Text: "Open", URL: "https://example.com"}},
+		},
+	}
+	tests := []struct {
+		method string
+		call   func(*Client) (*SentMessage, error)
+	}{
+		{
+			method: "sendMessage",
+			call: func(client *Client) (*SentMessage, error) {
+				return client.SendMessage(context.Background(), SendingMessage{ChatID: "chat", ReplyMarkup: keyboard})
+			},
+		},
+		{
+			method: "editMessageText",
+			call: func(client *Client) (*SentMessage, error) {
+				return client.EditMessageText(context.Background(), EditingMessageText{
+					ID: 42, ChatID: "chat", ReplyMarkup: keyboard,
+				})
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.method, func(t *testing.T) {
+			client := &Client{
+				botToken: "token",
+				host:     "telegram.example",
+				httpClient: &http.Client{
+					Transport: roundTripFunc(func(req *http.Request) (*http.Response, error) {
+						if req.Method != http.MethodPost || req.URL.Path != "/bottoken/"+tt.method {
+							t.Fatalf("unexpected request: %s %s", req.Method, req.URL.Path)
+						}
+						defer req.Body.Close()
+						var payload struct {
+							ReplyMarkup json.RawMessage `json:"reply_markup"`
+						}
+						if err := json.NewDecoder(req.Body).Decode(&payload); err != nil {
+							t.Fatalf("decode request body: %v", err)
+						}
+						const want = `{"inline_keyboard":[[{"text":"Open","url":"https://example.com"}]]}`
+						if string(payload.ReplyMarkup) != want {
+							t.Fatalf("expected reply_markup %s, got %s", want, payload.ReplyMarkup)
+						}
+						return &http.Response{
+							StatusCode: http.StatusOK,
+							Body:       io.NopCloser(strings.NewReader(`{"ok":true,"result":{"message_id":42}}`)),
+						}, nil
+					}),
+				},
+			}
+
+			message, err := tt.call(client)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if message.MessageID != 42 {
+				t.Fatalf("expected message ID 42, got %d", message.MessageID)
+			}
+		})
 	}
 }
 

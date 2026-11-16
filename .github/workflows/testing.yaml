@@ -50,6 +50,8 @@ jobs:
 
       - name: Run tests
         run: go test ./...
+      - name: Run Telegram API tests
+        run: go -C pkg/tgapi test ./...
 
   md2html-unit-test:
     name: md2html-unit-test
