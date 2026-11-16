@@ -17,6 +17,7 @@ type SendingMessage struct {
 	ChatThreadID string
 
 	ConvertMarkdown bool
+	ReplyMarkup     *InlineKeyboardMarkup
 }
 
 type SentMessage struct {
@@ -40,7 +41,7 @@ func (m *Client) SendMessage(ctx context.Context, msg SendingMessage) (*SentMess
 
 	var res sendMessageResponse
 
-	err = m.sendRequest(req, &res)
+	err = m.sendRequest(req, &res, tgMsg.ReplyMarkup)
 	if err != nil {
 		return nil, redactBotToken(err, m.botToken)
 	}
@@ -55,6 +56,7 @@ func (m *Client) createSendMessageRequest(msg SendingMessage) *sendMessageReques
 		Text:         msg.Body,
 		ChatID:       msg.ChatID,
 		ChatThreadID: msg.ChatThreadID,
+		ReplyMarkup:  msg.ReplyMarkup,
 	}
 	if !msg.ConvertMarkdown {
 		return tgMsg

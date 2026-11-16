@@ -14,6 +14,7 @@ type EditingMessageText struct {
 	ChatID          string
 	Body            string
 	ConvertMarkdown bool
+	ReplyMarkup     *InlineKeyboardMarkup
 }
 
 func (m *Client) EditMessageText(ctx context.Context, msg EditingMessageText) (*SentMessage, error) {
@@ -33,7 +34,7 @@ func (m *Client) EditMessageText(ctx context.Context, msg EditingMessageText) (*
 
 	var res editMessageTextResponse
 
-	err = m.sendRequest(req, &res)
+	err = m.sendRequest(req, &res, tgMsg.ReplyMarkup)
 	if err != nil {
 		return nil, redactBotToken(err, m.botToken)
 	}
@@ -45,9 +46,10 @@ func (m *Client) EditMessageText(ctx context.Context, msg EditingMessageText) (*
 
 func (m *Client) createEditMessageTextRequest(msg EditingMessageText) *editMessageTextRequest {
 	tgMsg := &editMessageTextRequest{
-		ID:     msg.ID,
-		ChatID: msg.ChatID,
-		Text:   msg.Body,
+		ID:          msg.ID,
+		ChatID:      msg.ChatID,
+		Text:        msg.Body,
+		ReplyMarkup: msg.ReplyMarkup,
 	}
 	if !msg.ConvertMarkdown {
 		return tgMsg

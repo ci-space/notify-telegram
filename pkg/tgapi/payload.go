@@ -1,5 +1,14 @@
 package tgapi
 
+type InlineKeyboardMarkup struct {
+	InlineKeyboard [][]InlineKeyboardButton `json:"inline_keyboard"`
+}
+
+type InlineKeyboardButton struct {
+	Text string `json:"text"`
+	URL  string `json:"url"`
+}
+
 type sendMessageRequest struct {
 	Text string `json:"text"`
 
@@ -8,6 +17,8 @@ type sendMessageRequest struct {
 
 	Type   string `json:"type"`
 	Markup string `json:"parse_mode"`
+
+	ReplyMarkup *InlineKeyboardMarkup `json:"reply_markup,omitempty"`
 }
 
 type sendMessageResponse struct {
@@ -22,6 +33,8 @@ type editMessageTextRequest struct {
 	Text   string `json:"text"`
 	Type   string `json:"type"`
 	Markup string `json:"parse_mode"`
+
+	ReplyMarkup *InlineKeyboardMarkup `json:"reply_markup,omitempty"`
 }
 
 type editMessageTextResponse struct {

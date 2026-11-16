@@ -13,6 +13,9 @@ inputs:
   message:
     description: Text for message
     required: true
+  buttons:
+    description: Inline keyboard as a YAML list of rows containing URL buttons
+    required: false
   host:
     description: Telegram host
     required: false

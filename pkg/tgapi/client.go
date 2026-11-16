@@ -60,7 +60,7 @@ func NewClient(cfg Config) (*Client, error) {
 	return client, nil
 }
 
-func (m *Client) sendRequest(req *http.Request, out interface{}) error {
+func (m *Client) sendRequest(req *http.Request, out interface{}, keyboard *InlineKeyboardMarkup) error {
 	req.Header.Add("Content-Type", "application/json")
 
 	resp, err := m.httpClient.Do(req)
@@ -91,6 +91,14 @@ func (m *Client) sendRequest(req *http.Request, out interface{}) error {
 	}
 
 	if !errResp.Ok {
+		if keyboard != nil {
+			description := errResp.Description
+			// Telegram can echo a rejected button URL, including its query parameters.
+			if keyboard.containsURL(description) {
+				description = "check inline keyboard button URLs"
+			}
+			return fmt.Errorf("telegram error %d: %s", errResp.ErrorCode, description)
+		}
 		return fmt.Errorf("telegram return no-ok response: %s", string(bodyContent))
 	}
 
@@ -100,6 +108,17 @@ func (m *Client) sendRequest(req *http.Request, out interface{}) error {
 	}
 
 	return nil
+}
+
+func (keyboard *InlineKeyboardMarkup) containsURL(description string) bool {
+	for _, row := range keyboard.InlineKeyboard {
+		for _, button := range row {
+			if button.URL != "" && strings.Contains(description, button.URL) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func parseSocks5ProxyURL(addr string) (*url.URL, error) {
