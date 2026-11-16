@@ -157,10 +157,17 @@ func update(ctx *cli.Context, client *tgapi.Client, cfg config, keyboard *tgapi.
 	return res.MessageID, nil
 }
 
+type buttonInput struct {
+	// Keep YAML tags so that numbers and booleans cannot be coerced to strings.
+	Text yaml.Node `yaml:"text"`
+	URL  yaml.Node `yaml:"url"`
+}
+
 func parseButtons(input string) ([][]tgapi.InlineKeyboardButton, error) {
 	decoder := yaml.NewDecoder(strings.NewReader(input))
-	var document yaml.Node
-	err := decoder.Decode(&document)
+	decoder.KnownFields(true)
+	var rows [][]*buttonInput
+	err := decoder.Decode(&rows)
 	if errors.Is(err, io.EOF) {
 		return nil, nil
 	}
@@ -174,20 +181,19 @@ func parseButtons(input string) ([][]tgapi.InlineKeyboardButton, error) {
 		return nil, err
 	}
 
-	rows := document.Content[0]
-	if rows.Kind != yaml.SequenceNode {
+	if rows == nil {
 		return nil, errors.New("expected a list of rows")
 	}
-	keyboard := make([][]tgapi.InlineKeyboardButton, len(rows.Content))
-	for rowIndex, row := range rows.Content {
-		if row.Kind != yaml.SequenceNode || len(row.Content) == 0 {
+	keyboard := make([][]tgapi.InlineKeyboardButton, len(rows))
+	for rowIndex, row := range rows {
+		if len(row) == 0 {
 			return nil, fmt.Errorf("row %d: expected a non-empty list of buttons", rowIndex+1)
 		}
-		buttons := make([]tgapi.InlineKeyboardButton, len(row.Content))
-		for buttonIndex, node := range row.Content {
-			button, parseErr := parseButton(node)
-			if parseErr != nil {
-				return nil, fmt.Errorf("row %d, button %d: %w", rowIndex+1, buttonIndex+1, parseErr)
+		buttons := make([]tgapi.InlineKeyboardButton, len(row))
+		for buttonIndex, input := range row {
+			button, buttonErr := input.button()
+			if buttonErr != nil {
+				return nil, fmt.Errorf("row %d, button %d: %w", rowIndex+1, buttonIndex+1, buttonErr)
 			}
 			buttons[buttonIndex] = button
 		}
@@ -197,47 +203,32 @@ func parseButtons(input string) ([][]tgapi.InlineKeyboardButton, error) {
 	return keyboard, nil
 }
 
-func parseButton(node *yaml.Node) (tgapi.InlineKeyboardButton, error) {
+func (input *buttonInput) button() (tgapi.InlineKeyboardButton, error) {
 	var button tgapi.InlineKeyboardButton
-	if node.Kind != yaml.MappingNode {
+	if input == nil {
 		return button, errors.New("expected a mapping with text and url fields")
 	}
-
-	for i := 0; i < len(node.Content); i += 2 {
-		key, value := node.Content[i], node.Content[i+1]
-		if key.Kind != yaml.ScalarNode || key.ShortTag() != "!!str" {
-			return button, errors.New("expected a string field name")
-		}
-
-		var field *string
-		switch key.Value {
-		case "text":
-			field = &button.Text
-		case "url":
-			field = &button.URL
-		default:
-			return button, fmt.Errorf("unsupported field %q", key.Value)
-		}
-		if *field != "" {
-			return button, fmt.Errorf("duplicate field %q", key.Value)
-		}
-		if value.Kind != yaml.ScalarNode || value.ShortTag() != "!!str" || strings.TrimSpace(value.Value) == "" {
-			return button, fmt.Errorf("%s must be a non-empty string", key.Value)
-		}
-		*field = value.Value
+	if err := validateButtonField("text", input.Text); err != nil {
+		return button, err
 	}
-
-	if button.Text == "" {
-		return button, errors.New("text is required")
+	if err := validateButtonField("url", input.URL); err != nil {
+		return button, err
 	}
-	if button.URL == "" {
-		return button, errors.New("url is required")
-	}
-	if !validButtonURL(button.URL) {
+	if !validButtonURL(input.URL.Value) {
 		return button, errors.New("url must be a valid http://, https://, or tg:// URL")
 	}
 
-	return button, nil
+	return tgapi.InlineKeyboardButton{Text: input.Text.Value, URL: input.URL.Value}, nil
+}
+
+func validateButtonField(name string, value yaml.Node) error {
+	if value.Kind == 0 {
+		return fmt.Errorf("%s is required", name)
+	}
+	if value.Kind != yaml.ScalarNode || value.ShortTag() != "!!str" || strings.TrimSpace(value.Value) == "" {
+		return fmt.Errorf("%s must be a non-empty string", name)
+	}
+	return nil
 }
 
 func validButtonURL(rawURL string) bool {
