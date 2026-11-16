@@ -34,7 +34,7 @@ func (m *Client) EditMessageText(ctx context.Context, msg EditingMessageText) (*
 
 	var res editMessageTextResponse
 
-	err = m.sendRequest(req, &res)
+	err = m.sendRequest(req, &res, tgMsg.ReplyMarkup)
 	if err != nil {
 		return nil, redactBotToken(err, m.botToken)
 	}

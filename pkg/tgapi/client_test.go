@@ -162,6 +162,42 @@ func TestSendMessageRedactsBotTokenFromRequestError(t *testing.T) {
 	assertBotTokenRedacted(t, err, token)
 }
 
+func TestMessageRequestsHideRejectedButtonURL(t *testing.T) {
+	const buttonURL = "https://localhost/download?id=42&token=example-signed-token"
+	const response = `{"ok":false,"error_code":400,"description":"Bad Request: Inline keyboard button URL '` +
+		`https://localhost/download?id=42\u0026token=example-signed-token' is invalid: Wrong HTTP URL"}`
+	const wantError = "telegram error 400: check inline keyboard button URLs"
+
+	keyboard := &InlineKeyboardMarkup{
+		InlineKeyboard: [][]InlineKeyboardButton{{{Text: "Open", URL: buttonURL}}},
+	}
+	client := &Client{
+		botToken: "bot-token",
+		host:     "telegram.example",
+		httpClient: &http.Client{
+			Transport: roundTripFunc(func(req *http.Request) (*http.Response, error) {
+				defer req.Body.Close()
+				return &http.Response{
+					StatusCode: http.StatusBadRequest,
+					Body:       io.NopCloser(strings.NewReader(response)),
+				}, nil
+			}),
+		},
+	}
+
+	_, err := client.SendMessage(context.Background(), SendingMessage{ChatID: "chat", ReplyMarkup: keyboard})
+	if err == nil || err.Error() != wantError {
+		t.Errorf("sendMessage error = %v, want %q", err, wantError)
+	}
+
+	_, err = client.EditMessageText(context.Background(), EditingMessageText{
+		ID: 42, ChatID: "chat", ReplyMarkup: keyboard,
+	})
+	if err == nil || err.Error() != wantError {
+		t.Errorf("editMessageText error = %v, want %q", err, wantError)
+	}
+}
+
 func TestSendMessageRedactsBotTokenFromTelegramResponse(t *testing.T) {
 	const token = "123456:secret-token"
 
